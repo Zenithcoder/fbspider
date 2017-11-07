@@ -2,4 +2,3 @@ node_modules
 dataset
 cookies.json
 yarn.lock
-env.js

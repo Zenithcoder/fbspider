@@ -1,6 +1,7 @@
-import puppeteer from 'puppeteer';
-import fs from 'fs';
 import env from 'env';
+import fs from 'fs';
+import puppeteer from 'puppeteer';
+import * as Group from 'group';
 
 /* Ensure dataset exists. If not, create it */
 if (!fs.existsSync('dataset')) {
@@ -18,12 +19,35 @@ const app = (async (appName, groupURL) => {
     args: ['--no-sandbox']
   });
 
+  // Loggin
   const page = await browser.newPage();
   await page.goto('https://www.facebook.com', { waitUntil: 'networkidle' });
   await page.type('#email', env.email);
   await page.type('#pass', env.pass);
   await page.click('#loginbutton');
   await page.waitFor('#userNav', { timeout: 60e3 });
+
+  // Navigate to group
+  await page.goto(groupURL, { waitUntil: 'networkidle' });
+
+  let donePosts;
+  let ignoredPosts;
+
+  try {
+    donePosts = fs.readFileSync(`${datasetDir(appName)}/post-list.json`).toString().split(',');
+  } catch (e) {
+    donePosts = [];
+  }
+
+  try {
+    ignoredPosts = fs.readFileSync(`${datasetDir(appName)}/ignored.txt`).toString().split(',');
+  } catch (e) {
+    ignoredPosts = [];
+  }
+
+  donePosts = new Set(donePosts);
+  ignoredPosts = new Set(ignoredPosts);
+
 
 });
 
