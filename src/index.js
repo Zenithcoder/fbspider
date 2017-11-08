@@ -1,7 +1,14 @@
 import env from 'env';
 import fs from 'fs';
+import path from 'path';
+import moment from 'moment';
 import puppeteer from 'puppeteer';
 import * as Group from 'group';
+
+/* Config dataset directories */
+const DATA_PATH = path.resolve(__dirname, '../dataset');
+const today = moment().format('YYYY-MM-DD');
+const datasetDir = (app) => `${DATA_PATH}/${app}/${today}`;
 
 /* Ensure dataset exists. If not, create it */
 if (!fs.existsSync('dataset')) {
@@ -10,6 +17,11 @@ if (!fs.existsSync('dataset')) {
 }
 
 const app = (async (appName, groupURL) => {
+  /* Ensure dataset exists for app */
+    if (!fs.existsSync(`${DATA_PATH}/${appName}`)) {
+      fs.mkdirSync(`${DATA_PATH}/${appName}`);
+  }
+
   /* Init puppeteer browser and page */
   const browser = await puppeteer.launch({
     headless: process.env.HEADLESS === 'true',
@@ -27,10 +39,8 @@ const app = (async (appName, groupURL) => {
   await page.click('#loginbutton');
   await page.waitFor('#userNav', { timeout: 60e3 });
 
-  console.log("-------------------------- Navigating ------------------------------");
   // Navigate to group
   await page.goto(groupURL, { waitUntil: 'networkidle' });
-  console.log("---------------------- Navigate done -------------------------------");
 
   // Prepare for crawler
   let crawledIds;
@@ -65,10 +75,18 @@ const app = (async (appName, groupURL) => {
       .filter(p => !crawledIds.has(Group.getPostIdFromURL(p)))
       .filter(p => !ignoredIds.has(Group.getPostIdFromURL(p)));
 
+     if (!postURLs.length) {
+      await Group.nextPage(page);
+     }
+
     for (let i in postURLs) {
       const postURL = postURLs[i];
       console.log(" postURL = ", postURL)
       const postId = Group.getPostIdFromURL(postURL);
+
+      if (!fs.existsSync(datasetDir(appName))) {
+        fs.mkdirSync(datasetDir(appName));
+      }
 
       // Crawl a post to json file
       let postPage = await browser.newPage();
@@ -76,19 +94,22 @@ const app = (async (appName, groupURL) => {
       const post = {
         ...meta
       }
+
       fs.writeFileSync(`${datasetDir(appName)}/${postId}.json`, JSON.stringify(post));
       await postPage.close();
 
       // Save history
       crawledIds.add(postId);
-      fs.writeFileSync(`${datasetDir(appName)}/crawled-ids.json`, Array.from(donePosts).join(','));
+      fs.writeFileSync(`${datasetDir(appName)}/crawled-ids.json`, Array.from(crawledIds).join(','));
     }
   }
+
+  browser.close();
 
 });
 
 try {
-  app('vietnamesesexybae', 'https://www.facebook.com/groups/vietnamesesexybae/');
+  app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
 } catch(err) {
   console.error(err);
 }

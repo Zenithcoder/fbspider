@@ -8,7 +8,6 @@ export const getPosts = async page => {
 
 // Send "End" button to scroll to the bottom to let facebook loads more posts
 export const nextPage = async page => {
-  _d('Scroll down');
   await page.keyboard.press('End');
   return await page.waitFor(3e3);
 };
