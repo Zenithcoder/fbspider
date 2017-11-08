@@ -46,3 +46,5 @@ export const getPostMeta = async (page, postURL) => {
 
   return meta;
 };
+
+export const getPostIdFromURL = URL => URL.match(/permalink\/(.*)/)[1].toString().replace(/\//g, '').replace(/\n/g, '');

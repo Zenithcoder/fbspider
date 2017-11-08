@@ -27,27 +27,63 @@ const app = (async (appName, groupURL) => {
   await page.click('#loginbutton');
   await page.waitFor('#userNav', { timeout: 60e3 });
 
+  console.log("-------------------------- Navigating ------------------------------");
   // Navigate to group
   await page.goto(groupURL, { waitUntil: 'networkidle' });
+  console.log("---------------------- Navigate done -------------------------------");
 
-  let donePosts;
-  let ignoredPosts;
+  // Prepare for crawler
+  let crawledIds;
+  let ignoredIds;
 
   try {
-    donePosts = fs.readFileSync(`${datasetDir(appName)}/post-list.json`).toString().split(',');
+    crawledIds = fs.readFileSync(`${datasetDir(appName)}/crawled-ids.json`).toString().split(',');
   } catch (e) {
-    donePosts = [];
+    crawledIds = [];
   }
 
   try {
-    ignoredPosts = fs.readFileSync(`${datasetDir(appName)}/ignored.txt`).toString().split(',');
+    ignoredIds = fs.readFileSync(`${datasetDir(appName)}/ignored-ids.txt`).toString().split(',');
   } catch (e) {
-    ignoredPosts = [];
+    ignoredIds = [];
   }
+  console.log("------------------------------ Prepared ------------------------");
 
-  donePosts = new Set(donePosts);
-  ignoredPosts = new Set(ignoredPosts);
+  crawledIds = new Set(crawledIds);
+  ignoredIds = new Set(ignoredIds);
 
+  let count = 0;
+  while(true) {
+    count++;
+    console.log("---------------------- times: ", count, "----------------------");
+    let postURLs = await Group.getPosts(page);
+    console.log("---- postURLs = ", postURLs);
+
+    postURLs = (await Group.getPosts(page))
+      .filter((p, idx) => idx !== 0)
+      .filter(p => p.indexOf('permalink') !== -1)
+      .filter(p => !crawledIds.has(Group.getPostIdFromURL(p)))
+      .filter(p => !ignoredIds.has(Group.getPostIdFromURL(p)));
+
+    for (let i in postURLs) {
+      const postURL = postURLs[i];
+      console.log(" postURL = ", postURL)
+      const postId = Group.getPostIdFromURL(postURL);
+
+      // Crawl a post to json file
+      let postPage = await browser.newPage();
+      const meta = await Group.getPostMeta(postPage, postURL);
+      const post = {
+        ...meta
+      }
+      fs.writeFileSync(`${datasetDir(appName)}/${postId}.json`, JSON.stringify(post));
+      await postPage.close();
+
+      // Save history
+      crawledIds.add(postId);
+      fs.writeFileSync(`${datasetDir(appName)}/crawled-ids.json`, Array.from(donePosts).join(','));
+    }
+  }
 
 });
 
