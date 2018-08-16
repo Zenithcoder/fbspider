@@ -33,14 +33,14 @@ const app = (async (appName, groupURL) => {
 
   // Loggin
   const page = await browser.newPage();
-  await page.goto('https://www.facebook.com', { waitUntil: 'networkidle' });
+  await page.goto('https://www.facebook.com', { waitUntil: 'networkidle2' });
   await page.type('#email', env.email);
   await page.type('#pass', env.pass);
   await page.click('#loginbutton');
   await page.waitFor('#userNav', { timeout: 60e3 });
 
   // Navigate to group
-  await page.goto(groupURL, { waitUntil: 'networkidle' });
+  await page.goto(groupURL, { waitUntil: 'networkidle2' });
 
   // Prepare for crawler
   let crawledIds;
