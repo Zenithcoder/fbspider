@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
 import puppeteer from 'puppeteer';
-import * as Group from 'group';
+
+import * as Feed from 'feed';
 
 /* Config dataset directories */
 const DATA_PATH = path.resolve(__dirname, '../dataset');
@@ -24,9 +25,9 @@ const app = (async (appName, groupURL) => {
 
   /* Init puppeteer browser and page */
   const browser = await puppeteer.launch({
-    headless: process.env.HEADLESS === 'true',
-    // headless: false,
-    devtools: false,
+    // headless: process.env.HEADLESS === 'true',
+    headless: false,
+    // devtools: false,
     timeout: 0,
     args: ['--no-sandbox']
   });
@@ -62,54 +63,14 @@ const app = (async (appName, groupURL) => {
   crawledIds = new Set(crawledIds);
   ignoredIds = new Set(ignoredIds);
 
-  let count = 0;
-  while(true) {
-    count++;
-    console.log("---------------------- times: ", count, "----------------------");
-    let postURLs = await Group.getPosts(page);
-    console.log("---- postURLs = ", postURLs);
-
-    postURLs = (await Group.getPosts(page))
-      .filter((p, idx) => idx !== 0)
-      .filter(p => p.indexOf('permalink') !== -1)
-      .filter(p => !crawledIds.has(Group.getPostIdFromURL(p)))
-      .filter(p => !ignoredIds.has(Group.getPostIdFromURL(p)));
-
-     if (!postURLs.length) {
-      await Group.nextPage(page);
-     }
-
-    for (let i in postURLs) {
-      const postURL = postURLs[i];
-      console.log(" postURL = ", postURL)
-      const postId = Group.getPostIdFromURL(postURL);
-
-      if (!fs.existsSync(datasetDir(appName))) {
-        fs.mkdirSync(datasetDir(appName));
-      }
-
-      // Crawl a post to json file
-      let postPage = await browser.newPage();
-      const meta = await Group.getPostMeta(postPage, postURL);
-      const post = {
-        ...meta
-      }
-
-      fs.writeFileSync(`${datasetDir(appName)}/${postId}.json`, JSON.stringify(post));
-      await postPage.close();
-
-      // Save history
-      crawledIds.add(postId);
-      fs.writeFileSync(`${datasetDir(appName)}/crawled-ids.json`, Array.from(crawledIds).join(','));
-    }
-  }
+  await Feed.all(page, crawledIds, ignoredIds, appName, browser);
 
   browser.close();
-
 });
 
 try {
   app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
+  // app('redditvietnam', 'https://www.facebook.com/groups/redditvietnam/');
 } catch(err) {
   console.error(err);
 }
