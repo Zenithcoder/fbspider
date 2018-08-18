@@ -25,15 +25,15 @@ export const getPostMeta = async (page, postURL) => {
   const meta = {
     id: postId,
     link: postURL,
-    actor: (await page.evaluate(() => {
-      const links = document.querySelectorAll('._5x46._1yz1 a');
+    // actor: (await page.evaluate(() => {
+      // const links = document.querySelectorAll('._5x46._1yz1 a');
 
-      return {
-        avatar: links[0].querySelector('img').src,
+      // return {
+        // avatar: links[0].querySelector('img').src,
         // name: links[0].querySelector('img').attributes['aria-label'].value,
         // link: links[0].href
-      };
-    })),
+      // };
+    // })),
     caption,
     // utime,
     // imageURL,
