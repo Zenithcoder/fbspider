@@ -6,9 +6,7 @@ import moment from 'moment';
 import * as Setting from 'setting';
 
 export const all = async (page, appName, browser) => {
-  const DATA_PATH = path.resolve(__dirname, '../dataset');
-  const today = moment().format('YYYY-MM-DD');
-  const datasetDir = (app) => `${DATA_PATH}/${app}/${today}`;
+  const datasetDir = Setting.datasetDir();
 
   let count = 0;
 

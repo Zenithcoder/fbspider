@@ -6,7 +6,7 @@ import moment from 'moment';
 /* Config dataset directories */
 const DATA_PATH = path.resolve(__dirname, '../dataset');
 const today = moment().format('YYYY-MM-DD');
-const datasetDir = (app) => `${DATA_PATH}/${app}/${today}`;
+export const datasetDir = (app) => `${DATA_PATH}/${app}/${today}`;
 
 export const initialize = async (appName) => {
 

@@ -20,9 +20,9 @@ const app = (async (appName, groupURL) => {
 
   await Setting.initialize();
 
-  // await Feed.all(page, appName, browser);
-  let members = await Group.members(page);
-  console.log(members);
+  await Feed.all(page, appName, browser);
+  // let members = await Group.members(page);
+  // console.log(members);
 
   browser.close();
 });
@@ -39,8 +39,8 @@ const login = async (page, groupURL) => {
 }
 
 try {
-  // app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
-  app('redditvietnam', 'https://www.facebook.com/groups/redditvietnam/local_members');
+  app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
+  // app('redditvietnam', 'https://www.facebook.com/groups/redditvietnam/local_members');
 } catch(err) {
   console.error(err);
 }
