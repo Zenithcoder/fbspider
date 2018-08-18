@@ -19,27 +19,25 @@ export const getPostMeta = async (page, postURL) => {
   }
   const postId = getPostIdFromURL(postURL);
   const caption = await page.evaluate(() => document.querySelector('.userContent').innerText);
-  const utime = await page.evaluate(() => document.querySelector('._5x46._1yz1 a abbr').dataset.utime);
-  const imageURL = await page.evaluate(() =>
-    document.querySelector('.mtm a').dataset.ploi ||
-    document.querySelector('.mtm img').src);
-  const reactions = await page.evaluate(() => document.querySelector('.UFILikeSentence').innerText.replace(/\s.*/, '').replace(/\n/g, ''));
+  // const utime = await page.evaluate(() => document.querySelector('._5x46._1yz1 a abbr').dataset.utime);
+  // const imageURL = await page.evaluate(() => document.querySelector('.mtm a').dataset.ploi || document.querySelector('.mtm img').src);
+  // const reactions = await page.evaluate(() => document.querySelector('.UFILikeSentence').innerText.replace(/\s.*/, '').replace(/\n/g, ''));
   const meta = {
     id: postId,
     link: postURL,
-    actor: (await page.evaluate(() => {
-      const links = document.querySelectorAll('._5x46._1yz1 a');
+    // actor: (await page.evaluate(() => {
+      // const links = document.querySelectorAll('._5x46._1yz1 a');
 
-      return {
-        avatar: links[0].querySelector('img').src,
-        name: links[0].querySelector('img').attributes['aria-label'].value,
-        link: links[0].href
-      };
-    })),
+      // return {
+        // avatar: links[0].querySelector('img').src,
+        // name: links[0].querySelector('img').attributes['aria-label'].value,
+        // link: links[0].href
+      // };
+    // })),
     caption,
-    utime,
-    imageURL,
-    reactions,
+    // utime,
+    // imageURL,
+    // reactions,
     timestamp: Date.now()
   };
 
