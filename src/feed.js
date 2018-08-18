@@ -19,7 +19,6 @@ export const all = async (page, appName, browser) => {
     count++;
     console.log("---------------------- times: ", count, "----------------------");
     let postURLs = await Group.getPosts(page);
-    console.log("=============================================");
     console.log("---- postURLs = ", postURLs);
 
     postURLs = (await Group.getPosts(page))

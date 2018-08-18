@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 
 import * as Feed from 'feed';
 import * as Setting from 'setting';
+import * as Group from 'group';
 
 const app = (async (appName, groupURL) => {
   /* Init puppeteer browser and page */
@@ -19,7 +20,9 @@ const app = (async (appName, groupURL) => {
 
   await Setting.initialize();
 
-  await Feed.all(page, appName, browser);
+  // await Feed.all(page, appName, browser);
+  let members = await Group.members(page);
+  console.log(members);
 
   browser.close();
 });
@@ -36,8 +39,8 @@ const login = async (page, groupURL) => {
 }
 
 try {
-  app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
-  // app('redditvietnam', 'https://www.facebook.com/groups/redditvietnam/');
+  // app('vietnamesesexybae', 'https://www.facebook.com/groups/VNsbGroup/');
+  app('redditvietnam', 'https://www.facebook.com/groups/redditvietnam/local_members');
 } catch(err) {
   console.error(err);
 }
