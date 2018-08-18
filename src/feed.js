@@ -3,11 +3,18 @@ import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
 
-export const all = async (page, crawledIds, ignoredIds, appName, browser) => {
+import * as Setting from 'setting';
+
+export const all = async (page, appName, browser) => {
   const DATA_PATH = path.resolve(__dirname, '../dataset');
   const today = moment().format('YYYY-MM-DD');
   const datasetDir = (app) => `${DATA_PATH}/${app}/${today}`;
+
   let count = 0;
+
+  let crawledIds = Setting.getCrawledIds();
+  let ignoredIds = Setting.getIgnoredIds();
+
   while(true) {
     count++;
     console.log("---------------------- times: ", count, "----------------------");
@@ -30,9 +37,9 @@ export const all = async (page, crawledIds, ignoredIds, appName, browser) => {
       console.log(" postURL = ", postURL)
       const postId = Group.getPostIdFromURL(postURL);
 
-      if (!fs.existsSync(datasetDir(appName))) {
-        fs.mkdirSync(datasetDir(appName));
-      }
+      // if (!fs.existsSync(datasetDir(appName))) {
+        // fs.mkdirSync(datasetDir(appName));
+      // }
 
       // Crawl a post to json file
       let postPage = await browser.newPage();
