@@ -46,9 +46,21 @@ export const getPostMeta = async (page, postURL) => {
 
 export const getPostIdFromURL = URL => URL.match(/permalink\/(.*)/)[1].toString().replace(/\//g, '').replace(/\n/g, '');
 
-export const members = async page => {
+export const membersPerPage = async page => {
   return await page.evaluate(() => {
-    const members = Array.from(document.querySelectorAll('.fbProfileBrowserList ul div a'));
+    const members = Array.from(document.querySelectorAll('.fbProfileBrowserList ul div ._60rg'));
     return members.map(member => member.href);
   });
+}
+
+export const allMembers = async page => {
+  let count = 0;
+
+  while(true) {
+    count++;
+    console.log("---------------------- times: ", count, "----------------------");
+    let members = await membersPerPage(page);
+    console.log(members);
+    await nextPage(page);
+  }
 }

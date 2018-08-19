@@ -16,8 +16,8 @@ export const all = async (page, appName, browser) => {
   while(true) {
     count++;
     console.log("---------------------- times: ", count, "----------------------");
-    let postURLs = await Group.getPosts(page);
-    console.log("---- postURLs = ", postURLs);
+    // let postURLs = await Group.getPosts(page);
+    // console.log("---- postURLs = ", postURLs);
 
     postURLs = (await Group.getPosts(page))
       .filter((p, idx) => idx !== 0)
